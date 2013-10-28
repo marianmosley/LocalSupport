@@ -159,6 +159,8 @@ class Organization < ActiveRecord::Base
       end
     end
   end
+
+  # not covered in organization spec
   def send_admin_mail
     AdminMailer.new_user_waiting_for_approval(self)#.deliver
   end
