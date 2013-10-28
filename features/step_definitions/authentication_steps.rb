@@ -69,16 +69,13 @@ Then /^I should not be signed in as any user$/ do
   }
 end
 
+# this could easily be merged
 Given /^I am not signed in as any user$/ do
   step "I should not be signed in as any user"
 end
 
 When /^I sign out$/ do
   click_link 'Sign Out' 
-end
-
-Then /^I should be on the sign in page$/ do
-  current_path.should == new_user_session_path
 end
 
 Given /^I sign in as "(.*?)" with password "(.*?)"$/ do |email, password|
@@ -88,19 +85,23 @@ Given /^I sign in as "(.*?)" with password "(.*?)"$/ do |email, password|
 end
 
 Given /^I am on the sign in page$/ do
-  steps %Q{ 
-    Given I am on the home page
-  }
+  step "I am on the home page"
   click_link 'Org Login'
 end
 
 Given /^I am on the sign up page$/ do
-  steps %Q{ 
-    Given I am on the home page
-  }
+  step "I am on the home page"
   click_link 'New Org?'
 end
 
+When(/^I sign in as "(.*?)" with password "(.*?)" via email confirmation$/) do |email, password|
+  user = User.find_by_email("#{email}")
+  user.confirm!
+  steps %Q{
+    Given I am on the sign in page
+    And I sign in as "#{email}" with password "#{password}"
+  }
+end
 Given(/^"(.*?)" has requested edit privileges for "(.*?)"$/) do |arg1, arg2|
     pending
 end
@@ -135,6 +136,7 @@ end
 Then(/^I should not see a link to approve them$/) do
   page.should_not have_link "Approve"
 end
+
 Given(/^"(.*?)" has requested admin status for "(.*?)"$/) do |email, org_name|
   organization = Organization.find_by_name(org_name)
   user = User.find_by_email(email)

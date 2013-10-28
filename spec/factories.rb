@@ -11,6 +11,12 @@ FactoryGirl.define do
     charity_commission_id 1
     charity_commission_name "weird!"
   end
+  factory :page do
+    name 'About Us'
+    permalink 'about'
+    content 'abc123'
+  end
+
   factory :admin_user , class: User do
     email "admin@example.com"
     password "pppppppp"
