@@ -344,7 +344,7 @@ Given /^I am signed in to approve users$/ do
   }
 end
 
-Given(/^"(.*)"'s request status for "(.*)" should be updated appropriately$/) do |email,org|
+Given /^"(.*)"'s request status for "(.*)" should be updated appropriately$/ do |email,org|
   steps %Q{
     Then an email should be sent to "admin@myorg.com"
     And I should see "You have requested admin status for My Organization"

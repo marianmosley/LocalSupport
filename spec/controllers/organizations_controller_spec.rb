@@ -145,6 +145,23 @@ describe OrganizationsController do
       assigns(:json).should eq(json)
     end
 
+    context "determines whether the user is attached to an organization as admin or pending admin" do
+      before(:each) do
+        Organization.stub(:find).with("37") { double_organization }
+        @user = double("User")
+        controller.stub(:current_user).and_return(@user)
+      end
+      it "sets grabbable to false if user is signed in as charity admin" do
+        @user.should_receive(:can_edit?).with(double_organization).and_return(true)
+        get :show, :id => 37
+        assigns(:grabbable).should be(false)
+      end
+      it "sets grabbable to false if user has a pending charity admin request" do
+        @user.should_receive(:can_edit?).with(double_organization).and_return(false)
+        get :show, :id => 37
+        assigns(:grabbable).should be(false)
+      end
+    end
     context "editable flag is assigned to match user permission" do
       before(:each) do
         Organization.stub(:find).with("37") { double_organization }
