@@ -28,7 +28,11 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:id])
     @editable = current_user.can_edit?(@organization) if current_user
     @json = gmap4rails_with_popup_partial(@organization,'popup')
-    @grabbable = false
+    if current_user
+      @grabbable = !@editable ||current_user.pending_organization_id.nil?
+    #else
+    #  @grabbable = true
+    end
   end
 
   # GET /organizations/new

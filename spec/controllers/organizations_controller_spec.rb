@@ -146,20 +146,29 @@ describe OrganizationsController do
     end
 
     context "determines whether the user is attached to an organization as admin or pending admin" do
-      before(:each) do
+      it "sets grabbable to false if user is signed in as charity admin" do
         Organization.stub(:find).with("37") { double_organization }
         @user = double("User")
         controller.stub(:current_user).and_return(@user)
-      end
-      it "sets grabbable to false if user is signed in as charity admin" do
-        @user.should_receive(:can_edit?).with(double_organization).and_return(true)
+        @user.stub(:pending_organization_id).and_return(nil)
+        @user.stub(:organization_id).and_return(37)
+        @user.stub(:can_edit?).with(double_organization).and_return(true)
         get :show, :id => 37
+        assigns(:editable).should be(true)
         assigns(:grabbable).should be(false)
       end
       it "sets grabbable to false if user has a pending charity admin request" do
-        @user.should_receive(:can_edit?).with(double_organization).and_return(false)
-        get :show, :id => 37
-        assigns(:grabbable).should be(false)
+        pending
+        #@user.should_receive(:pending_organization_id).and_return(37)
+        #controller.stub(:current_user).and_return(@user)
+        #get :show, :id => 37
+        #assigns(:grabbable).should be(false)
+      end
+      it "sets grabbable to true if user is not signed in" do
+        pending
+      end
+      it "sets grabbable to true if user is signed in and does not have a pending request" do
+        pending
       end
     end
     context "editable flag is assigned to match user permission" do
