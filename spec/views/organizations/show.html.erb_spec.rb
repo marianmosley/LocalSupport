@@ -86,4 +86,20 @@ describe "organizations/show.html.erb" do
       rendered.should_not have_link :href => edit_organization_path(organization.id)
     end
   end
+  
+  context 'this is my organization button' do
+    let(:organization) do
+      stub_model Organization, :id => 1
+    end
+    it 'renders grab button if grabbable true' do
+      @editable = assign(:grabbable, true)
+      render
+      rendered.should have_button("This is my organization")
+    end
+    it 'does not render grab button if grabbable false' do
+      @editable = assign(:grabbable, false)
+      render
+      rendered.should_not have_button("This is my organization")
+    end
+  end
 end

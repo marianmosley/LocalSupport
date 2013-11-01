@@ -26,6 +26,10 @@ class User < ActiveRecord::Base
     admin? || (!org.nil? && organization == org)
   end
 
+  def can_grab? org
+     (organization != org) && (pending_organization_id != org.id)
+  end
+
   def make_admin_of_org_with_matching_email
     org = Organization.find_by_email self.email
     self.organization = org if org
