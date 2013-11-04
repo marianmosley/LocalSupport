@@ -502,7 +502,7 @@ describe OrganizationsController do
         @user.should_receive(:save!)
         post :grab, id: @org_id
       end
-      it "sets charity admin pending to true" do
+      it "sets pending organization" do
         post :grab, id: @org_id
         @user.pending_organization_id.should eq @org.id
       end

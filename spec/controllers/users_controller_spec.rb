@@ -19,12 +19,6 @@ describe UsersController do
         User.should_receive(:all)
         get :index, :charity_admin_pending => "false"
       end
-      it 'should display users awaiting admin approval' do
-        mock_users = [mock(:user), mock(:user)]
-        User.should_receive(:where).with("users.pending_organization_id IS NOT NULL").and_return(mock_users)
-        get :index, :charity_admin_pending => "true"
-        assigns(:users).should eq(mock_users)
-      end
       it "renders the users index" do
         get :index, :charity_admin_pending => "true"
         response.should render_template 'index'

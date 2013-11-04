@@ -103,7 +103,6 @@ class OrganizationsController < ApplicationController
       @organization.send_admin_mail
       flash[:notice] = "You have requested admin status for #{@organization.name}"
       current_user.pending_organization_id = @organization.id
-      current_user.charity_admin_pending = true
       current_user.save!
       redirect_to organization_path(@organization.id)
     end
