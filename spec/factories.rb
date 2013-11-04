@@ -23,7 +23,6 @@ FactoryGirl.define do
     confirmed_at "2007-01-01 10:00:00"
     admin true
     organization nil
-    charity_admin_pending false
   end
 
   factory :user do
@@ -32,7 +31,6 @@ FactoryGirl.define do
     confirmed_at "2007-01-01 10:00:00"
     admin false
     organization nil
-    charity_admin_pending false
 
     factory :user_stubbed_organization do
       after(:build) do |user|

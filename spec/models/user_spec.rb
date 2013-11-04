@@ -22,71 +22,75 @@ describe User do
     user.save!
     user.admin.should be_false
   end
-
-  context 'is charity admin' do
-    subject(:user) { create(:user, admin: false, organization: model ) } 
-    it 'can not grab organizations' do
-      user.can_grab?(model).should be_false 
-    end
-  end
-
-  context 'is pending charity admin' do
-    let(:org) do
-      stub_model Organization, :id => 5
-    end
-      
-    subject(:user) { create(:user, admin: false, pending_organization_id: org.id) } 
-    it 'can not grab organizations' do
-      user.organization.should eq nil
-      org.id.should eq 5
-      user.pending_organization_id.should eq 5
-      user.can_grab?(org).should be_false 
-    end
-  end
-  context 'is neither charity admin nor pending charity admin' do
-    subject(:user) { create(:user, admin: false, pending_organization_id: nil) } 
-    let( :non_associated_model ) { mock_model("Organization") }
-    it 'can grab organizations' do
-      user.organization = nil
-      user.can_grab?(non_associated_model).should be_true
-    end
-  end
-
-  context 'is site admin' do
-    subject(:user) { create(:user, admin: true) }  
-    
-    it 'can edit organizations' do
-      user.can_edit?(model).should be_true 
-    end
-
-  end
   
-  context 'is not site admin' do 
-    
-    let( :non_associated_model ) { mock_model("Organization") }
-    
-    subject(:user) { create(:user, admin: false, organization: model ) } 
-    
-    it 'can edit associated organization' do
-      user.organization.should eq model
-      user.can_edit?(model).should be_true 
-    end
-    
-    it 'can not edit non-associated organization' do
-      user.organization.should eq model
-      user.can_edit?(non_associated_model).should be_false
-    end
-    
-    it 'can not edit when associated with no org' do
-      user.organization = nil
-      user.organization.should eq nil
-      user.can_edit?(non_associated_model).should be_false
+  describe "can_grab?" do
+    context 'is charity admin' do
+      subject(:user) { create(:user, admin: false, organization: model ) } 
+      it 'can not grab organizations' do
+        user.can_grab?(model).should be_false 
+      end
     end
 
-    it 'can not edit when associated with no org and attempting to access non-existent org' do
-      user.can_edit?(nil).should be_false
+    context 'is pending charity admin' do
+      let(:org) do
+        stub_model Organization, :id => 5
+      end
+      
+      subject(:user) { create(:user, admin: false, pending_organization_id: org.id) } 
+      it 'can not grab organizations' do
+        user.organization.should eq nil
+        org.id.should eq 5
+        user.pending_organization_id.should eq 5
+        user.can_grab?(org).should be_false 
+      end
     end
+    context 'is neither charity admin nor pending charity admin' do
+      subject(:user) { create(:user, admin: false, pending_organization_id: nil) } 
+      let( :non_associated_model ) { mock_model("Organization") }
+      it 'can grab organizations' do
+        user.organization = nil
+        user.can_grab?(non_associated_model).should be_true
+      end
+    end
+  end
+
+  describe "can_edit?" do
+    context 'is site admin' do
+      subject(:user) { create(:user, admin: true) }  
+    
+      it 'can edit organizations' do
+        user.can_edit?(model).should be_true 
+      end
+
+    end
+  
+    context 'is not site admin' do 
+    
+      let( :non_associated_model ) { mock_model("Organization") }
+    
+      subject(:user) { create(:user, admin: false, organization: model ) } 
+    
+      it 'can edit associated organization' do
+        user.organization.should eq model
+        user.can_edit?(model).should be_true 
+      end
+    
+      it 'can not edit non-associated organization' do
+        user.organization.should eq model
+        user.can_edit?(non_associated_model).should be_false
+      end
+    
+      it 'can not edit when associated with no org' do
+        user.organization = nil
+        user.organization.should eq nil
+        user.can_edit?(non_associated_model).should be_false
+      end
+
+      it 'can not edit when associated with no org and attempting to access non-existent org' do
+        user.can_edit?(nil).should be_false
+      end
    
+    end
   end
 
   # http://stackoverflow.com/questions/12125038/where-do-i-confirm-user-created-with-factorygirl

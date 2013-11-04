@@ -504,7 +504,6 @@ describe OrganizationsController do
       end
       it "sets charity admin pending to true" do
         post :grab, id: @org_id
-        @user.charity_admin_pending.should be_true
         @user.pending_organization_id.should eq @org.id
       end
       it "sends an email to the site admin regarding the 'this is my organization' request" do

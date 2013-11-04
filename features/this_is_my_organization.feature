@@ -38,9 +38,6 @@ Scenario: I am a signed in user who requests to be admin for my organization
   And I press "This is my organization"
   Then I should be on the charity page for "My Organization"
   And "nonadmin@myorg.com"'s request status for "My Organization" should be updated appropriately
-  # And flags listed below must be set for user
-  # user.charity_admin_pending will be set to TRUE here
-  # user.pending_organization_id is set for their charity
 
 Scenario: I am a charity admin so I am redirected to my charity's page and I do not see the This is My Organization button
   Given I am on the sign in page

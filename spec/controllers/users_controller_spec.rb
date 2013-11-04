@@ -16,12 +16,14 @@ describe UsersController do
         user.should_receive(:admin?).and_return(true)
       end
       it 'should display all users' do
-        User.should_receive(:all) #.with(false).and_return(@user)
+        User.should_receive(:all)
         get :index, :charity_admin_pending => "false"
       end
       it 'should display users awaiting admin approval' do
-        User.should_receive(:find_all_by_charity_admin_pending) #.with(true).and_return(@user)
+        mock_users = [mock(:user), mock(:user)]
+        User.should_receive(:where).with("users.pending_organization_id IS NOT NULL").and_return(mock_users)
         get :index, :charity_admin_pending => "true"
+        assigns(:users).should eq(mock_users)
       end
       it "renders the users index" do
         get :index, :charity_admin_pending => "true"
