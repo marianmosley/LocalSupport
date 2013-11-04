@@ -33,8 +33,7 @@ class UsersController < ApplicationController
   def reject_charity_admin
     redirect_to root_url unless current_user.admin?
     pending_user = User.find_by_id(params[:id])
-    if pending_user.charity_admin_pending
-      pending_user.charity_admin_pending = false
+    if pending_user.pending_organization_id
       pending_user.pending_organization_id = nil
       pending_user.save!
     end
