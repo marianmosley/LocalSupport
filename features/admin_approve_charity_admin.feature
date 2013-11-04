@@ -6,14 +6,14 @@ Feature: Admin approve charity admin
 
   Background:
     Given the following organizations exist:
-    | name            | address        |
-    | My Organization | 83 pinner road |
+    | name            | address        | id |
+    | My Organization | 83 pinner road | 1  |
 
     And the following users are registered:
-    | email              | password       | admin | confirmed_at        | organization    | charity_admin_pending | pending_organization_id | 
-    | nonadmin@myorg.com | mypassword1234 | false | 2008-01-01 00:00:00 |                 | false                 | 	|
-    | admin@myorg.com    | adminpass0987  | true  | 2008-01-01 00:00:00 | My Organization | false                 |   |
-    | pending@myorg.com  | password123    | false | 2008-01-01 00:00:00 |                 | true                  | 1 |
+    | email              | password       | admin | confirmed_at        | organization    | pending_organization_id | 
+    | nonadmin@myorg.com | mypassword1234 | false | 2008-01-01 00:00:00 |                 |                       	|
+    | admin@myorg.com    | adminpass0987  | true  | 2008-01-01 00:00:00 | My Organization |                         |
+    | pending@myorg.com  | password123    | false | 2008-01-01 00:00:00 |                 |  1                      |
 
 
   Scenario: As an admin approving a pending user's request

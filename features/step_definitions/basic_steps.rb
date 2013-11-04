@@ -295,14 +295,14 @@ Then(/^I should see "(.*?)" < linked > to "(.*?)"$/) do |text, url|
 end
 # concerned about this not doing anything substantive
 Then(/^I should see a list of users with pending privileges$/) do
-  expect(page).to have_content("true")
+  expect(page).to have_link("Approve")
+  expect(page).to have_link("Reject")
 end
 
 Then(/^I should (not )?see a link to approve "(.*?)"$/) do |negate, email|
   expectation_method = negate ? :not_to : :to
   id=User.find_by_email(email).id
   expect(page.find("##{id}.userrow").text).send(expectation_method, have_text("Approve"))
-  #page.find("##{id}.userrow").should have_text("Approve")
 end
 
 Given /^there are pending users$/ do

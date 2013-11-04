@@ -21,9 +21,8 @@ class UsersController < ApplicationController
   def approve_charity_admin
     redirect_to root_url unless current_user.admin?
     pending_user = User.find_by_id(params[:id])
-    if pending_user.charity_admin_pending
-      pending_user.charity_admin_pending = false
-      org_id = pending_user.pending_organization_id
+    org_id = pending_user.pending_organization_id
+    unless org_id.blank?
       pending_user.pending_organization_id = nil
       pending_user.organization_id = org_id
       pending_user.save!

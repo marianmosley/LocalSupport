@@ -61,12 +61,11 @@ describe UsersController do
       controller.stub(:current_user).and_return(admin)
       admin.should_receive(:admin?).and_return(true)
     end
-    context "pending values" do
+    context "there are users with pending_organization_ids" do
       it "should not be changed if charity_admin_pending is false (sad path)" do
         pending_user = double("User")
         User.should_receive(:find_by_id).with("3").and_return(pending_user)
-        pending_user.stub(:charity_admin_pending).and_return(false)
-        pending_user.should_not_receive(:charity_admin_pending=).with(true)
+        pending_user.stub(:pending_organization_id).and_return(nil)
         pending_user.should_not_receive(:pending_organization_id=).with(5)
         pending_user.should_not_receive(:organization_id=).with(nil)
         put :approve_charity_admin, id: 3
@@ -83,9 +82,7 @@ describe UsersController do
       it "should set charity_admin_pending from true to false (happy path)" do
         pending_user = double("User")
         User.should_receive(:find_by_id).with("3").and_return(pending_user)
-        pending_user.stub(:charity_admin_pending).and_return(true)
         pending_user.stub(:pending_organization_id).and_return(5)
-        pending_user.should_receive(:charity_admin_pending=).with(false)
         pending_user.should_receive(:pending_organization_id=).with(nil)
         pending_user.should_receive(:organization_id=).with(5)
         pending_user.should_receive(:save!)
