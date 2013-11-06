@@ -1,33 +1,31 @@
 require 'spec_helper'
 
 describe "users/index.html.erb" do
-  let(:org1) do
-   mock_model Organization, :id => 5, :name => 'test', :address => "12 pinner rd", :postcode => "HA1 4HP",:telephone => "1234", :website => 'http://a.com', :description => 'I am test organization hahahahahhahaha', :lat => 1, :lng => -1
-  end
-
-  let(:user1) do
-    stub_model User,:email => 'test@test.org', :pending_organization_id => org1.id
-  end
-
-  let(:user2) do
-    stub_model User,:email => 'test2@test.org', :pending_organization_id => 5
-  end
-
-  let(:users) do
-    [user1,user2]
-  end
-
-  before(:each) do
-    assign(:users, users)
-  end
-
   context "logged in admin user"  do
+    let(:org1) do
+      Gmaps4rails.stub(:geocode)
+      FactoryGirl.create(:organization, :id => 5)
+    end
+
+    let(:user1) do
+      stub_model User,:email => 'test@test.org', :pending_organization_id => org1.id
+    end
+
+    let(:user2) do
+      stub_model User,:email => 'test2@test.org', :pending_organization_id => nil
+    end
+
+    let(:users) do
+      [user1,user2]
+    end
+
     before :each do
-      assign(:organizations, organizations)
-      @user = double('user')
+      assign(:users, users)
+      @user = FactoryGirl.create(:user)
       @user.stub(:id => 100)
       view.stub(:current_user) {@user}
-      @user.admin(:try).with(:admin?).and_return(true)
+      @user.stub(:admin?).and_return(true)
+      @user.pending_organization_id = 5
       render
     end
     it "renders Approve and Reject links" do
