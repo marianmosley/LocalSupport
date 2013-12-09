@@ -43,6 +43,13 @@ describe OrganizationsController do
         Category.should_receive(:html_drop_down_options).and_return(category_html_options)
       end
 
+      it "orders search results by most recent" do
+        Organization.should_receive(:order_by_most_recent).and_return(result)
+        result.stub_chain(:search_by_keyword, :filter_by_category).with('test').with(nil).and_return(result)
+        get :search, :q => 'test'
+        assigns(:organizations).should eq([double_organization])
+      end
+
       it "sets up appropriate values for view vars: query_term, organizations and json" do
         Organization.should_receive(:search_by_keyword).with('test').and_return(result)
         result.should_receive(:filter_by_category).with('1').and_return(result)
@@ -126,7 +133,7 @@ describe OrganizationsController do
       json='my markers'
       result.should_receive(:to_gmaps4rails).and_return(json)
       Category.should_receive(:html_drop_down_options).and_return(category_html_options)
-      Organization.should_receive(:order).with('updated_at DESC').and_return(result)
+      Organization.should_receive(:order_by_most_recent).and_return(result)
       result.stub_chain(:page, :per).and_return(result)
       get :index
       assigns(:organizations).should eq(result)
@@ -135,6 +142,13 @@ describe OrganizationsController do
   end
 
   describe "GET show" do
+    before(:each) do
+      @user = double("User")
+      Organization.stub(:find).with("37") { double_organization }
+      @user.stub(:can_edit?).and_return
+      @user.stub(:can_request_org_admin?)
+      controller.stub(:current_user).and_return(@user)
+    end
     it "assigns the requested organization as @organization and appropriate json" do
       json='my markers'
       @org = double_organization
@@ -146,12 +160,6 @@ describe OrganizationsController do
     end
 
     context "editable flag is assigned to match user permission" do
-      before(:each) do
-        Organization.stub(:find).with("37") { double_organization }
-        @user = double("User")
-        controller.stub(:current_user).and_return(@user)
-      end
-
       it "user with permission leads to editable flag true" do
         @user.should_receive(:can_edit?).with(double_organization).and_return(true)
         get :show, :id => 37
@@ -167,7 +175,29 @@ describe OrganizationsController do
       it 'when not signed in editable flag is nil' do
         controller.stub(:current_user).and_return(nil)
         get :show, :id => 37
-        expect(assigns(:editable)).to eq nil
+        expect(assigns(:editable)).to be_false
+      end
+    end
+    
+    context "grabbable flag is assigned to match user permission" do
+      it 'assigns grabbable to true when user can request org admin status' do
+        @user.stub(:can_edit?)
+        @user.should_receive(:can_request_org_admin?).with(double_organization).and_return(true)
+        controller.stub(:current_user).and_return(@user)
+        get :show, :id => 37
+        assigns(:grabbable).should be(true)
+      end
+      it 'assigns grabbable to false when user cannot request org admin status' do
+        @user.stub(:can_edit?)
+        @user.should_receive(:can_request_org_admin?).with(double_organization).and_return(false)
+        controller.stub(:current_user).and_return(@user)
+        get :show, :id => 37
+        assigns(:grabbable).should be(false)
+      end
+      it 'when not signed in grabbable flag is nil' do
+        controller.stub(:current_user).and_return(nil)
+        get :show, :id => 37
+        expect(assigns(:grabbable)).to be_false
       end
     end
   end

@@ -15,9 +15,9 @@ Given /^I am signed in as an? (non-)?admin$/ do |negate|
 end
 
 Given /^I sign up as "(.*?)" with password "(.*?)" and password confirmation "(.*?)"$/ do |email, password,password_confirmation|
-  fill_in "Email" , :with => email
-  fill_in "user_password" , :with => password
-  fill_in "user_password_confirmation" , :with => password_confirmation
+  fill_in "signup_email" , :with => email
+  fill_in "signup_password" , :with => password
+  fill_in "signup_password_confirmation" , :with => password_confirmation
   click_button "Sign up"
 end
 
@@ -46,6 +46,7 @@ Given /^the following users are registered:$/ do |users_table|
   users_table.hashes.each do |user|
     user["admin"] = user["admin"] == "true"
     user["organization"] = Organization.find_by_name(user["organization"])
+    user["pending_organization"] = Organization.find_by_name(user["pending_organization"])
     worker = User.create! user, :without_protection => true
   end
 end
@@ -57,7 +58,7 @@ Given /^that I am logged in as any user$/ do
    | registered_user@example.com | pppppppp | 2007-01-01  10:00:00 |
   } 
   steps %Q{
-    Given I am on the sign in page
+    Given I am on the home page
     And I sign in as "registered_user@example.com" with password "pppppppp"
   }
 end
@@ -70,30 +71,39 @@ Then /^I should not be signed in as any user$/ do
 end
 
 When /^I sign out$/ do
-  click_link 'Sign Out' 
+  click_link 'Log out'
 end
 
 Given /^I sign in as "(.*?)" with password "(.*?)"$/ do |email, password|
-  fill_in "Email" , :with => email
-  fill_in "Password" , :with => password
-  click_button "Sign in"
+  fill_in "user_email" , :with => email
+  fill_in "user_password" , :with => password
+  click_link_or_button "Sign in"
 end
 
-Given /^I am on the sign in page$/ do
-  step "I am on the home page"
-  click_link 'Org Login'
+Given /^the sign in form is visible$/ do
+  #expect(page).to have_form('loginForm')
+  expect(page).to have_field('user_email')
+  expect(page).to have_field('user_password')
+  expect(page).to have_button('signin')
+  #click_link 'Org Login'
+end
+
+Given /^the dropdown menu is visible$/ do
+  expect(page).to have_css('#navLogin')
 end
 
 Given /^I am on the sign up page$/ do
   step "I am on the home page"
-  click_link 'New Org?'
+  expect(page).to have_field('signup_email')
+  expect(page).to have_field('signup_password')
+  expect(page).to have_button('signup')
 end
 
 When(/^I sign in as "(.*?)" with password "(.*?)" via email confirmation$/) do |email, password|
   user = User.find_by_email("#{email}")
   user.confirm!
   steps %Q{
-    Given I am on the sign in page
+    Given I am on the home page
     And I sign in as "#{email}" with password "#{password}"
   }
 end
