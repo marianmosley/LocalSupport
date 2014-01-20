@@ -17,4 +17,13 @@ describe ApplicationController do
       response.cookies['cookie_policy_accepted'].should be_true
     end
   end
+
+  describe "store location" do
+    it 'should store the previous url in the session' do
+      controller.request.stub(:fullpath).and_return('/organizations/1')
+      ApplicationController.store_location
+      debugger
+      session[:previous_url].should eq '/organizations/1'
+    end
+  end
 end

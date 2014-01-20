@@ -4,7 +4,15 @@ class ApplicationController < ActionController::Base
      return root_url if current_user.admin? || current_user.organization == nil
      organization_path(current_user.organization.id)
   end
-
+  def store_location
+ # store last url - this is needed for post-login redirect to whatever the user last visited.
+    if (request.fullpath != "/users/sign_in" &&
+        request.fullpath != "/users/sign_up" &&
+        request.fullpath != "/users/password" &&
+        !request.xhr?) # don't store ajax calls
+      session[:previous_url] = request.fullpath
+    end
+  end
   def allow_cookie_policy
     response.set_cookie 'cookie_policy_accepted', {
         value: 'true',
