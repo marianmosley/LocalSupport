@@ -19,6 +19,8 @@ class ApplicationController < ActionController::Base
   #We test this functionality in sign-in tests for session_controller_spec
   def after_sign_in_path_for(resource)
     store_location
+    debugger
+    return "#{organization_user_path(params[:user][:pending_organization_id],current_user.id)}/update?method=post" if params[:user][:pending_organization_id]
     return session[:previous_url] if session[:previous_url]
     return organization_path(current_user.organization) if current_user.organization
     root_path

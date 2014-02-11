@@ -6,6 +6,7 @@ class UsersController < ApplicationController
   # business logic pulled into a separate model or process
   def update
     user = User.find_by_id(params[:id])
+    debugger
     if params[:organization_id]
       attribs = { pending_organization_id: params[:organization_id] }
       org = Organization.find(params[:organization_id])

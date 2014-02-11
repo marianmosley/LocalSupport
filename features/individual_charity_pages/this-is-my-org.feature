@@ -39,10 +39,11 @@ Feature: This is my organization
     Given I am on the charity page for "The Organization"
     Then I should see "This is my organization"
     When I click id "TIMO"
+    Then show me the page
     Then I should be on the charity page for "The Organization"
     When I sign in as "nonadmin@myorg.com" with password "mypassword1234"
-    Then I should be on the charity page for "The Organization"
     And "nonadmin@myorg.com"'s request status for "The Organization" should be updated appropriately
+    Then I should be on the charity page for "The Organization"
 
   @javascript
   Scenario: I am not a registered user, I will be offered "This is my organization" claim button
