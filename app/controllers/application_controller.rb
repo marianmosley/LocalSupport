@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
     #sign_password = Regexp.new '/users/password'
     #cookies_allow = Regexp.new '/cookies/allow'
     #debugger
-    unless request.params['controller'] == 'devise' || request.method != 'GET' # don't store ajax calls
+    unless request.params['controller'] =~ /devise/ || request.method != 'GET' # don't store ajax calls
       session[:previous_url] = request.path
     end
   end
