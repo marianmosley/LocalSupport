@@ -5,15 +5,12 @@ class ApplicationController < ActionController::Base
 
   def store_location
     # store last url - this is needed for post-login redirect to whatever the user last visited.
-    sign_in = Regexp.new '/users/sign_in'
-    sign_up = Regexp.new '/users/sign_up'
-    sign_password = Regexp.new '/users/password'
-    cookies_allow = Regexp.new '/cookies/allow'
-    unless (sign_in =~ request.path ||
-        sign_up =~ request.path ||
-        sign_password =~ request.path ||
-        cookies_allow =~ request.path ||
-        request.xhr?) # don't store ajax calls
+    #sign_in = Regexp.new '/users/sign_in'
+    #sign_up = Regexp.new '/users/sign_up'
+    #sign_password = Regexp.new '/users/password'
+    #cookies_allow = Regexp.new '/cookies/allow'
+    #debugger
+    unless request.params['controller'] == 'devise' || request.method != 'GET' # don't store ajax calls
       session[:previous_url] = request.path
     end
   end
