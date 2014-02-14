@@ -93,6 +93,7 @@ end
 
 Given /^I am on the charity page for "(.*?)"$/ do |name1|
   org1 = Organization.find_by_name(name1)
+  debugger
   visit organization_path org1.id
   within('#content') do
     page.should have_css('#column1.span6')
@@ -148,4 +149,13 @@ end
 
 And(/^I click tableheader "([^"]*)"$/) do |name|
   find('th', :text => "#{name}").click
+end
+
+When(/^jfdklsjfdksl$/) do |id|
+  all_routes = Rails.application.routes.routes
+  require 'rails/application/route_inspector'
+  inspector = Rails::Application::RouteInspector.new
+  all_routes = inspector.collect_routes(all_routes)
+  all_routes.map! {|route| [route[:verb].downcase, :path => route[:path].gsub(/:.*\//, "#{id}/").gsub(/\(.*\)/, '')] }
+  public_routes = all_routes.reject {|route| page.driver.send(route[0], route[1]); page.driver.status_code == '302'}
 end
