@@ -169,6 +169,4 @@ When(/^public routes "(.*)"$/) do |id|
     print "#{page.driver.status_code}\n"
     public_routes << route if page.driver.status_code != '302'
   end
-  debugger
-  puts 'hi'
 end
