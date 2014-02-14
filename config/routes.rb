@@ -4,14 +4,17 @@ LocalSupport::Application.routes.draw do
 
   get 'contributors' => 'contributors#show'
   match 'organizations/search' => 'organizations#search'
-
+  
+  put '/organizations/:organization_id/user/:id' => 'users#update'
+  get '/organizations/:organization_id/user/:id' => 'users#show'
+  
   resources :orphans, only: [:index, :create]
   resources :users, only: [:index, :update]
 
-  resources :pages
+  #resources :pages
 
   resources :organizations do
-    resources :users
+  #  resources :users
   end
 
   # so that static pages are linked directly instead of via /pages/:id
