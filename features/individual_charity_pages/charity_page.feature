@@ -16,7 +16,8 @@ Feature: Web page owned by each charity
       | registered_user-2@example.com | pppppppp |              | 2007-01-01  10:00:00 |
 
   Scenario: be able to view link to charity site on individual charity page
-    Given I am on the charity page for "Friendly"
+#    Given I am on the charity page for "Friendly"
+    Given public routes "3"
     Then I should see the external website link for "Friendly" charity
 
   Scenario: display charity title in a visible way
