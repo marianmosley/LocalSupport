@@ -162,8 +162,11 @@ When(/^public routes "(.*)"$/) do |id|
   end
   #all_routes.map! {|route| [route[:verb].downcase, route[:path].gsub(/:.*\//, "#{id}/").gsub(/\(.*\)/, '')] }
   public_routes = []
+  print 'Visiting the following routes'
   all_routes.each do |route|
+    print "#{route[:verb]}, #{route[:path]} "
     page.driver.send(route[:verb], route[:path])
+    print "#{page.driver.status_code}\n"
     public_routes << route if page.driver.status_code != '302'
   end
   debugger

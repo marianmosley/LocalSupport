@@ -13,7 +13,7 @@ class UsersController < ApplicationController
       flash[:notice] = "You have requested admin status for #{org.name}"
       redirect_to(organization_path(params[:organization_id]))
     else
-      redirect_to :status => 404 and return unless current_user.admin?
+      redirect_to :status => 404 and return unless current_user.try(:admin?)
       user.promote_to_org_admin
       flash[:notice] = "You have approved #{user.email}."
       redirect_to(users_path)
