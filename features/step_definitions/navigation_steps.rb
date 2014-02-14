@@ -156,12 +156,16 @@ When(/^public routes "(.*)"$/) do |id|
   inspector = Rails::Application::RouteInspector.new
   all_routes = inspector.collect_routes(all_routes)
   all_routes.map! {|route| { :verb => route[:verb], :path => route[:path] } }
-  debugger
   all_routes.each do |route|
     route[:verb] = route[:verb].present? ? route[:verb].downcase : 'get'
-    route[:path].gsub!(/:.*\//, "#{id}/").gsub(/\(.*\)/, '')
+    route[:path] = route[:path].gsub(/:[_A-Za-z]*/, id).gsub(/\(.*\)/, '')
   end
   #all_routes.map! {|route| [route[:verb].downcase, route[:path].gsub(/:.*\//, "#{id}/").gsub(/\(.*\)/, '')] }
+  public_routes = []
+  all_routes.each do |route|
+    page.driver.send(route[:verb], route[:path])
+    public_routes << route if page.driver.status_code != '302'
+  end
   debugger
-  public_routes = all_routes.reject {|route| page.driver.send(route[0], route[1]); page.driver.status_code == '302'}
+  puts 'hi'
 end
