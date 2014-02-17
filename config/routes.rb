@@ -6,7 +6,7 @@ LocalSupport::Application.routes.draw do
   match 'organizations/search' => 'organizations#search'
   
   put '/organizations/:organization_id/user/:id' => 'users#update'
-  get '/organizations/:organization_id/user/:id' => 'users#show'
+  #get '/organizations/:organization_id/user/:id' => 'users#show'
   
   resources :orphans, only: [:index, :create]
   resources :users, only: [:index, :update]

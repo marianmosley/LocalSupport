@@ -164,9 +164,22 @@ When(/^public routes "(.*)"$/) do |id|
   public_routes = []
   print 'Visiting the following routes'
   all_routes.each do |route|
-    print "#{route[:verb]}, #{route[:path]} "
+    print "#{route[:verb]} #{route[:path]} "
     page.driver.send(route[:verb], route[:path])
     print "#{page.driver.status_code}\n"
     public_routes << route if page.driver.status_code != '302'
+  end
+  print "\nLOGGING IN FROM PUBLIC ROUTES\n\n"
+  public_routes.each do |route|
+    page.driver.send(route[:verb], route[:path])
+    print "#{route[:verb]} #{route[:path]} "
+    unless page.all('#navbar').empty?
+      within('#navbar') do
+        fill_in "user_email" , :with => 'user1@example.com'
+        fill_in "user_password" , :with => 'pppppppp'
+        click_link_or_button "Sign in"
+      end
+    end
+    print "#{page.driver.status_code}\n"
   end
 end
