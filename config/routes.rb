@@ -14,7 +14,7 @@ LocalSupport::Application.routes.draw do
   #resources :pages
 
   resources :organizations do
-  #  resources :users
+    resources :users
   end
 
   # so that static pages are linked directly instead of via /pages/:id
