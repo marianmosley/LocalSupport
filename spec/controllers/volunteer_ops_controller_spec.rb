@@ -194,3 +194,15 @@ describe VolunteerOpsController do
   end
 
 end
+
+describe VolunteerOpsController,'#authorize' do
+  let(:user) { double 'user' }
+  before do
+    controller.stub current_user: user, org_owner?: true
+  end
+  it 'should redirect to home if the user is not an org admin' do
+    controller.stub org_owner?: false
+    #controller.instance_eval({authorize})
+    response.should redirect_to ('/')
+  end
+end
