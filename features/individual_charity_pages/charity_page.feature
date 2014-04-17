@@ -10,6 +10,18 @@ Feature: Web page owned by each charity
       | Friendly       | Bereavement Counselling   | 34 pinner road | HA1 4HZ  | 020800000 | http://friendly.org  | admin@friendly.xx  |
       | Friendly Clone | Quite Friendly!           | 30 pinner road |          | 020800010 |                      |                    |
 
+    And the following categories exist:
+      | name              | charity_commission_id |
+      | Animal Welfare    | 101                   |
+      | Health            | 102                   |
+      | Education         | 103                   |
+
+    And the following categories_organizations exist:
+      | category       | organization   |
+      | Animal Welfare | Friendly       |
+      | Health         | Friendly Clone |
+      | Education      | Friendly Clone |
+
     Given the following users are registered:
       | email                         | password | organization | confirmed_at         |
       | registered_user-1@example.com | pppppppp | Friendly     | 2007-01-01  10:00:00 |
@@ -18,6 +30,15 @@ Feature: Web page owned by each charity
   Scenario: be able to view link to charity site on individual charity page
     Given I am on the charity page for "Friendly"
     Then I should see the external website link for "Friendly" charity
+
+  Scenario: categories are listed on the page
+    Given I am on the charity page for "Friendly"
+    Then I should see "Animal Welfare"
+
+  Scenario: categories are listed on the page
+    Given I am on the charity page for "Friendly Clone"
+    Then I should see "Health" 
+    And I should see "Education"
 
   Scenario: display charity title in a visible way
     Given I am on the charity page for "Friendly"
@@ -31,9 +52,10 @@ Feature: Web page owned by each charity
     Given I am on the charity page for "Friendly"
     Then I should see "<label>"
   Examples:
-    | label    |
-    |Postcode  |
-    |Email     |
+    | label         |
+    |Postcode       |
+    |Email          |
+    |Categories     |
 
   Scenario Outline: hide labels if field is empty
     Given I am on the charity page for "Friendly Clone"
