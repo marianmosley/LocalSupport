@@ -22,6 +22,12 @@ body {
 
 /* GLOBAL STYLES
 -------------------------------------------------- */
+.navbar-inner{
+    background-color: rgba(20, 148, 44, 0.05) !important;
+    background-image: url('HCN-wordless.png') !important;
+    background-size: 1200px 50px;
+}
+
 .page-frame {
     max-width: 1200px;
     min-height: 100%;
