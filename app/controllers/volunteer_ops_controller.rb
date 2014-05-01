@@ -25,7 +25,6 @@ class VolunteerOpsController < ApplicationController
       render action: 'new'
     end
   end
-
   private
 
   def authorize

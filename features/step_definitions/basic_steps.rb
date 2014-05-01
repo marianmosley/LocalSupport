@@ -2,6 +2,16 @@ require 'webmock/cucumber'
 require 'uri-handler'
 include ApplicationHelper
 
+Then(/^I should see the "(.*?)" image linked to "(.*?)"$/) do |image_alt, link|
+  within("a[href='#{link}']") do
+    find("img[@alt='#{image_alt}']").should_not be_nil
+  end
+end
+
+Then(/^I should see the "(.*?)" image linked to contributors$/) do |image_alt|
+  steps %{Then I should see the "#{image_alt}" image linked to "#{contributors_path}"}
+end
+
 Then /^I should see permission denied$/ do
   page.should have_content PERMISSION_DENIED
 end
@@ -377,11 +387,20 @@ Given(/^the (.*?) for "(.*?)" has been marked (public|hidden)$/) do |field,name,
   org.send("publish_#{field}=", publish)
   org.save!
 end
+<<<<<<< HEAD
 Then /^the index should( not)? contain:$/ do |negative, table|
+=======
+
+Then /^I should( not)? see:$/ do |negative, table|
+>>>>>>> 05faca241bb9750cc013b6cc54a06ad3dbd57cea
     expectation = negative ? :should_not : :should
     table.raw.flatten.each do |cell|
       within('#column2') do
         page.send(expectation, have_text(cell))
       end
   end
+end
+
+Then(/^I should see "([^"]*)" page before "([^"]*)"$/) do |first_item, second_item|
+  page.body.should =~ /#{first_item}.*#{second_item}/m
 end
