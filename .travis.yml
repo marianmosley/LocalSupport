@@ -20,4 +20,5 @@ deploy:
     develop: harrowcn-develop
     staging: harrowcn-staging
     master: harrowcn-production
+    marian: marian-localsupport
   run: rake db:migrate
