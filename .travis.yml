@@ -1,13 +1,25 @@
 language: ruby
 rvm:
-  - 1.9.3
+- 1.9.3
 before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 before_script:
-  - rake db:create:all
-  - rake db:migrate
-  - rake db:test:prepare
+- bundle exec rake db:create:all
+- bundle exec rake db:migrate
+- bundle exec rake db:migrate VERSION=0
+- bundle exec rake db:migrate
+- bundle exec rake db:test:prepare
 script:
-  - rake cucumber
-  - rake spec
+- bundle exec rake spec
+- bundle exec rake cucumber
+- USE_JASMINE_RAKE=true bundle exec rake jasmine:ci
+deploy:
+  provider: heroku
+  api_key:
+    secure: k4FCvNxFBbHzQORTljwBodH/1WXZxapcrGCvSuY9ibynj+/xvkVhdeYob5/O0QzMHO5o+Sm0MGrbF8bOIo8VXK6Hi7Zh9u/yczTBnMHk4EC4Joan8NIcQvNNC0hVj0q/J29oGqB1DUD7ZPKEgOOm8KFlqcQW1vcnjSzY2SBm2eA=
+  app:
+    develop: harrowcn-develop
+    staging: harrowcn-staging
+    master: harrowcn-production
+  run: rake db:migrate

@@ -6,15 +6,11 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-Organization.import_addresses 'db/data.csv', 1006
-
-user = User.new({
-    email: "admin@harrowcn.org.uk",
-    password: "asdf1234",
-    password_confirmation: "asdf1234",
-  })
-
+Organisation.import_addresses 'db/data.csv', 1006
+user = User.where(email: "admin@harrowcn.org.uk").first_or_initialize
+user.password = "asdf1234"
+user.password_confirmation = "asdf1234"
 user.confirmed_at = DateTime.now
 user.admin = true
-
 user.save!
+

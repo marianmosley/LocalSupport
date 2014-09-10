@@ -4,8 +4,8 @@
 # or operating system, you probably want to add a global ignore instead:
 #   git config --global core.excludesfile ~/.gitignore_global
 
+db/target_emails.csv
 cert_file
-Vagrantfile
 *.txt
 *.rbc
 *.sassc
@@ -34,6 +34,8 @@ linecache19-0.5.13.gem
 \#*#
 \.#*
 db/email_test.csv
+config/database.yml
+.projectile
 
 # ignore ruby version management stuff
 .rvmrc
@@ -41,3 +43,5 @@ db/email_test.csv
 .ruby-gemset
 .rbenv
 .rbenv-gemsets
+.floo
+.flooignore

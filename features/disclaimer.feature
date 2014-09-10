@@ -4,36 +4,24 @@ Feature: Disclaimer about not being able to guarantee accuracy of sites content 
   I want to show a link to a disclaimer on every page
   Tracker story ID: https://www.pivotaltracker.com/story/show/49757817
 
-Background: organizations have been added to database
+  Background: organisations have been added to database
 
-  Given the following organizations exist:
+  Given the following organisations exist:
     | name             | address        |
     | Friendly Charity | 83 pinner road |
   Given the following pages exist:
-    | name       | permalink  | content |
-    | Disclaimer | disclaimer | We disclaim everything!  |
+    | name       | permalink  | content                                                   | link_visible |
+    | 404        | 404        | We're sorry, but we couldn't find the page you requested! | false        |
+    | Disclaimer | disclaimer | We disclaim everything!                                   | true         |
 
-Scenario: the disclaimer page is accessible from the charity search page
-  Given I am on the charity search page
-  When I follow "Disclaimer"
-  Then I should see "We disclaim everything!"
+  Scenario Outline: the disclaimer page is accessible on all pages
+    Given I visit the <page>
+    When I follow "Disclaimer"
+    Then I should see "We disclaim everything!"
+  Examples:
+    | page                                                    |
+    | home page                                               |
+    | organisations index page                                |
+    | new organisation page                                   |
+    | show page for the organisation named "Friendly Charity" |
 
-Scenario: the disclaimer page is accessible from the charities page
-  Given I am on the home page
-  When I follow "Disclaimer"
-  Then I should see "We disclaim everything!"
-
-Scenario: the disclaimer page is accessible from the new charity page
-  Given I am on the new charity page
-  When I follow "Disclaimer"
-  Then I should see "We disclaim everything!"
-
-Scenario: the disclaimer page is accessible from the edit charity page for "Friendly Charity"
-  Given I am furtively on the edit charity page for "Friendly Charity"
-  When I follow "Disclaimer"
-  Then I should see "We disclaim everything!"
-
-Scenario: the disclaimer page is accessible from the charity page
-  Given I am on the charity page for "Friendly Charity"
-  When I follow "Disclaimer"
-  Then I should see "We disclaim everything!"

@@ -1,0 +1,16 @@
+<div class="row">
+  <h3>
+    <%= @volunteer_op.title %>
+  </h3>
+
+  <p>
+    <%= auto_link @volunteer_op.description %>
+  </p>
+
+  <p>
+    <b>Organisation:</b>
+    <%= link_to @volunteer_op.organisation.name, organisation_path(@volunteer_op.organisation.id) %>
+  </p>
+
+<% render partial: 'shared/map_scripts', locals: {json: @json} %>
+</div>
