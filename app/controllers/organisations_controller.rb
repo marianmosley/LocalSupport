@@ -106,6 +106,7 @@ class OrganisationsController < ApplicationController
     end
   end
   def user_can_edit?(org)
+    return true
     unless current_user.try(:can_edit?,org)
       flash[:notice] = PERMISSION_DENIED
       redirect_to organisation_path(params[:id]) and return false
