@@ -95,3 +95,12 @@ end
 After('@time_travel') do
   Delorean.back_to_1985
 end
+Before('@trapper') do
+  trap(:SIGINT) do
+    puts "Stand by - we'll be back in a jif"
+    trap(:SIGINT) do
+      Process.kill(:SIGILL, Process.pid)
+    end
+    `rake db:test:prepare`
+  end
+end
