@@ -17,6 +17,7 @@ Feature: Map of local charities
       | email                         | password | organisation | confirmed_at         |
       | registered_user-3@example.com | pppppppp | Youth UK     | 2007-01-01  10:00:00 |
 
+
   @javascript
   Scenario: Show all charities in map on homepage map
     Given I visit the home page

@@ -15,6 +15,7 @@ group :development, :test do
   gem 'delorean'
   gem 'metric_fu'
   gem 'database_cleaner', '1.0.1'
+  gem 'vcr'
   gem 'launchy'
   gem 'simplecov'
   gem 'sinatra-base'
