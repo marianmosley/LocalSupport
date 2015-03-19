@@ -32,14 +32,14 @@ Then /^the organisation "(.*?)" should have a (large|small) icon$/ do |name, ico
 end
 
 Then /^I should( not)? see the following (measle|vol_op) markers in the map:$/ do |negative, klass, table|
-  VCR.insert_cassette('anotherVCR.yml', :record => :new_episodes) do
+  #VCR.insert_cassette('anotherVCR.yml', :record => :new_episodes) do
   expectation = negative ? :not_to : :to
   klass_hash = {'measle' => '.measle', 'vol_op' => '.vol_op'}
   expect(page).to have_css(klass_hash[klass], :count => table.raw.flatten.length)
   ids = all(klass_hash[klass]).to_a.map { |marker| marker[:'data-id'].to_i }
 
   expect(ids).send(expectation, include(*Organisation.where(name: table.raw.flatten).pluck(:id)))
-  end
+  #end
 end
 
 Given(/^the map should show the opportunity titled (.*)$/) do |opportunity_title|
