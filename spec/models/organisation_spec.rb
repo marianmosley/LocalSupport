@@ -17,6 +17,7 @@ describe Organisation, :type => :model do
                               :description => 'Care for the elderly', :address => '64 pinner road', :postcode => 'HA1 3RE', :donation_info => 'www.indian-elders.co.uk/donate')
     @org2.categories << @category1
     @org2.categories << @category2
+    @org2.categories << @category3
     @org2.save!
     @org3 = FactoryGirl.build(:organisation, :email => "", :name => 'Age UK Elderly', :description => 'Care for older people', :address => '64 pinner road', :postcode => 'HA1 3RE', :donation_info => 'www.age-uk.co.uk/donate')
     @org3.categories << @category1
@@ -59,9 +60,15 @@ describe Organisation, :type => :model do
   end
 
   describe "#gmaps4rails_marker_attrs" do
+
+    def build_org_with_computed_fields_and_updated_at org, updated_at = nil
+      org.update_attributes(updated_at: updated_at) unless updated_at.nil?
+      Queries::Organisations.add_recently_updated_and_has_owner(Organisation.where(id: org.id)).first
+    end
     context 'no user' do
       it 'returns small icon when no associated user' do
-        expect(@org1.gmaps4rails_marker_attrs).to eq(["https://maps.gstatic.com/intl/en_ALL/mapfiles/markers2/measle.png", {"data-id"=>@org1.id, :class=>"measle"}])
+        expect(build_org_with_computed_fields_and_updated_at(@org1).gmaps4rails_marker_attrs).to eq(["https://maps.gstatic.com/intl/en_ALL/mapfiles/markers2/measle.png",
+          {"data-id"=>@org1.id, :class=>"measle"}])
       end
     end
 
@@ -72,25 +79,30 @@ describe Organisation, :type => :model do
         @org1.users << [usr]
         @org1.save!
       end
-      after(:each) do
-        allow(Time).to receive(:now).and_call_original
-      end
       it 'returns large icon when there is an associated user' do
-        expect(@org1.gmaps4rails_marker_attrs).to eq( ["http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png", {"data-id"=>@org1.id,:class=>"marker"}])
+        expect(build_org_with_computed_fields_and_updated_at(@org1).gmaps4rails_marker_attrs).to eq( ["https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png",
+          {"data-id"=>@org1.id,:class=>"marker"}])
       end
 
-      [365, 366, 500].each do |days|
+      [ 365, 366, 500 ].each do |days|
         it "returns small icon when update is #{days} days old" do
-          future_time = Time.at(Time.now + days.day)
-          allow(Time).to receive(:now){future_time}
-          expect(@org1.gmaps4rails_marker_attrs).to eq(["https://maps.gstatic.com/intl/en_ALL/mapfiles/markers2/measle.png", {"data-id"=>@org1.id, :class=>"measle"}])
+          # adds generous 5 second pad for query to run
+          past_time = Time.current.advance(days: -days).advance(seconds: -5)
+          expect(
+            build_org_with_computed_fields_and_updated_at(
+              @org1, past_time
+            ).gmaps4rails_marker_attrs
+          ).to eq([
+            "https://maps.gstatic.com/intl/en_ALL/mapfiles/markers2/measle.png",
+            {"data-id"=>@org1.id, :class=>"measle"}
+          ])
         end
       end
       [ 2, 100, 200, 364].each do |days|
         it "returns large icon when update is only #{days} days old" do
-          future_time = Time.at(Time.now + days.day)
-          allow(Time).to receive(:now){future_time}
-          expect(@org1.gmaps4rails_marker_attrs).to eq( ["http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png", {"data-id"=>@org1.id, :class=>"marker"} ])
+          past_time = Time.at(Time.now - days.day)
+          expect(build_org_with_computed_fields_and_updated_at(@org1, past_time).gmaps4rails_marker_attrs).to eq( ["https://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png",
+            {"data-id"=>@org1.id, :class=>"marker"} ])
         end
       end
     end
@@ -183,25 +195,16 @@ describe Organisation, :type => :model do
       expect(@org1.name).to eq 'New name'
     end
   end
-  it 'responds to filter by category' do
-    expect(Organisation).to respond_to(:filter_by_category)
-  end
-
-  it 'finds all orgs in a particular category' do
-    expect(Organisation.filter_by_category(@category1.id)).not_to include @org1
-    expect(Organisation.filter_by_category(@category1.id)).to include @org2
-    expect(Organisation.filter_by_category(@category1.id)).to include @org3
-  end
-
-  it 'finds all orgs when category is nil' do
-    expect(Organisation.filter_by_category(nil)).to include(@org1)
-    expect(Organisation.filter_by_category(nil)).to include(@org2)
-    expect(Organisation.filter_by_category(nil)).to include(@org3)
-  end
 
   it 'should have and belong to many categories' do
     expect(@org2.categories).to include(@category1)
     expect(@org2.categories).to include(@category2)
+  end
+
+  it 'should have and belong to many categories by types' do
+    expect(@org2.categories.what_they_do).to include(@category3)
+    expect(@org2.categories.who_they_help).to include(@category1)
+    expect(@org2.categories.how_they_help).to include(@category2)
   end
 
   it 'must have search by keyword' do
@@ -210,39 +213,6 @@ describe Organisation, :type => :model do
 
   it 'find all orgs that have keyword anywhere in their name or description' do
     expect(Organisation.search_by_keyword("elderly")).to eq([@org2, @org3])
-  end
-
-  it 'searches by keyword and filters by category and has zero results' do
-    result = Organisation.search_by_keyword("Harrow").filter_by_category("1")
-    expect(result).not_to include @org1, @org2, @org3
-  end
-
-  it 'searches by keyword and filters by category and has results' do
-    result = Organisation.search_by_keyword("Indian").filter_by_category(@category1.id)
-    expect(result).to include @org2
-    expect(result).not_to include @org1, @org3
-  end
-
-  it 'searches by keyword when filter by category id is nil' do
-    result = Organisation.search_by_keyword("Harrow").filter_by_category(nil)
-    expect(result).to include @org1
-    expect(result).not_to include @org2, @org3
-  end
-
-  it 'filters by category when searches by keyword is nil' do
-    result = Organisation.search_by_keyword(nil).filter_by_category(@category1.id)
-    expect(result).to include @org2, @org3
-    expect(result).not_to include @org1
-  end
-
-  it 'returns all orgs when both filter by category and search by keyword are nil args' do
-    result = Organisation.search_by_keyword(nil).filter_by_category(nil)
-    expect(result).to include @org1, @org2, @org3
-  end
-
-  it 'handles weird input (possibly from infinite scroll system)' do
-    # Couldn't find Category with id=?test=0
-    expect(lambda {Organisation.filter_by_category("?test=0")} ).not_to raise_error
   end
 
   it 'has users' do
@@ -275,6 +245,7 @@ describe Organisation, :type => :model do
     end
 
     it 'must fail gracefully when encountering error in generating multiple Organisations from text file' do
+      allow(Organisation).to receive(:sleep)
       attempted_number_to_import = 1006
       actual_number_to_import = 642
       allow(Organisation).to receive(:create_from_array).and_raise(CSV::MalformedCSVError)
@@ -661,4 +632,115 @@ describe Organisation, :type => :model do
       @org2.save!
     end
   end
+end
+
+describe Organisation, '::filter_by_categories' do
+  let!(:category1) { create(:category, :charity_commission_id => 108) }
+  let!(:category2) { create(:category, :charity_commission_id => 205) }
+  # not initialized!
+  let(:category3) { create(:category, :charity_commission_id => 307) }
+
+  let!(:org1) do
+    create(
+      :organisation,
+      :email => "",
+      :name => 'Harrow Bereavement Counselling',
+      :description => 'Bereavement Counselling',
+      :address => '64 pinner road',
+      :postcode => 'HA1 3TE',
+      :donation_info => 'www.harrow-bereavment.co.uk/donate',
+    )
+  end
+
+  let!(:org2) do
+    create(
+      :organisation,
+      :name => 'Indian Elders Association',
+      :email => "",
+      :description => 'Care for the elderly',
+      :address => '64 pinner road',
+      :postcode => 'HA1 3RE',
+      :donation_info => 'www.indian-elders.co.uk/donate'
+    ).tap { |o| o.categories << category1 ; o.categories << category2 }
+  end
+
+  let!(:org3) do
+    create(
+      :organisation,
+      :email => "",
+      :name => 'Age UK Elderly',
+      :description => 'Care for older people',
+      :address => '64 pinner road',
+      :postcode => 'HA1 3RE',
+      :donation_info => 'www.age-uk.co.uk/donate',
+    ).tap { |o| o.categories  << category1 }
+  end
+
+  context 'when filtering by ONE CATEGORY, it returns only organisations that
+           \ are associated with that category' do
+
+    it 'organisations returned by query' do
+      expect(
+        Organisation.filter_by_categories([category1.id]).pluck(:id)
+      ).to include(
+        org2.id, org3.id
+      )
+    end
+
+    it 'no duplicates' do
+      expect(
+        Organisation.filter_by_categories([category1.id]).map.size
+      ).to eq 2
+    end
+
+    it 'categories in join table' do
+      expect(
+        CategoryOrganisation.where(
+          organisation_id: Organisation.filter_by_categories([category1.id]).select(:id)
+        ).pluck(:category_id).uniq
+      ).to include(
+        category1.id, category2.id
+      )
+    end
+  end
+
+  context 'when filtering by TWO CATEGORIES, it returns only organisations that
+           \ are associated with those categories' do
+    # init
+    before { category3 }
+
+    it 'organisations returned by query' do
+      expect(
+        Organisation.filter_by_categories([
+          category1.id,
+          category2.id,
+        ]).pluck(:id)
+      ).to include(
+        org2.id
+      )
+    end
+
+    it 'no duplicates' do
+      expect(
+        Organisation.filter_by_categories([
+          category1.id,
+          category2.id,
+        ]).map.size
+      ).to eq 1
+    end
+
+    it 'categories in join table' do
+      expect(
+        CategoryOrganisation.where(
+          organisation_id: Organisation.filter_by_categories([
+            category1.id,
+            category2.id,
+          ]).select(:id)
+        ).pluck(:category_id).uniq
+      ).to include(
+        category1.id, category2.id
+      )
+    end
+  end
+
 end

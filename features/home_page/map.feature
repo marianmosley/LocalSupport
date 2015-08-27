@@ -31,18 +31,17 @@ Feature: Map of local charities
   @time_travel
   @javascript
   Scenario Outline: Organisation map has small icon for organisations updated more than 365 days ago
-    Given I travel "<days>" days into the future
+    Given I travel a year plus "<days>" days into the future
     And I visit the home page
     Then the organisation "Youth UK" should have a <size> icon
-    Examples: 
+    Examples:
       |days  | size |
-      | 2    | large|
-      |100   | large|
-      |200   | large|
-      |364   | large|
-      |365   | small|
-      |366   | small|
-      |500   | small|
+      | -10  | large|
+      | -1   | large|
+      |  0   | small|
+      |  1   | small|
+      | 10   | small|
+      |100   | small|
 
   @javascript
   Scenario: Organisation map has small icon for organisation with no users
@@ -60,3 +59,14 @@ Feature: Map of local charities
     Then the coordinates for "Harrow Bereavement Counselling" and "Youth UK" should be the same
     Then the coordinates for "Age UK" and "Youth UK" should not be the same
 
+  Scenario: Show meaning of large map icons on home page
+    Given I visit the home page
+    And I click "Close"
+    Then I should see "Details updated by the organisation within the last 12 months"
+    Then I should see "Details NOT updated by the organisation within the last 12 months"
+
+  Scenario: Do not show meaning of large map icons on volunteer ops page
+    Given I visit the volunteer opportunities page
+    And I click "Close"
+    Then I should not see "Details updated by the organisation within the last 12 months"
+    Then I should not see "Details NOT updated by the organisation within the last 12 months"

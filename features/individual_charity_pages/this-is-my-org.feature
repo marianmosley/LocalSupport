@@ -60,6 +60,7 @@ Feature: This is my organisation
     # And I should not see a link or button "This is my organisation"  <-- button still appears as we have no current_user ...
     And "normal_user@myorg.com"'s request for "Helpful Folk" should be persisted
     And I click on the confirmation link in the email to "normal_user@myorg.com"
+    When I sign in as "normal_user@myorg.com" with password "pppppppp" on the legacy sign in page
     Then I should be on the show page for the organisation named "Helpful Folk"
     And an email should be sent to "superadmin@localsupport.org" as notification of the request for admin status of "Helpful Folk"
 
@@ -68,7 +69,7 @@ Feature: This is my organisation
     Given I click "This is my organisation" on the "Helpful Folk" page and stay there
     When I click "toggle_link"
     And I sign up as "newuser@myorg.com" with password "pppppppp" and password confirmation "qppppppp"
-    Then I should see "error"
+    Then I should see "Password confirmation doesn't match Password"
     And I sign up as "newuser@myorg.com" with password "pppppppp" and password confirmation "pppppppp" on the legacy sign up page
     And I should see "A message with a confirmation link has been sent to your email address. Please open the link to activate your account."
     And I should be on the show page for the organisation named "Helpful Folk"
@@ -76,6 +77,7 @@ Feature: This is my organisation
     # And I should not see a link or button "This is my organisation"  <-- button still appears as we have no current_user ...
     And "newuser@myorg.com"'s request for "Helpful Folk" should be persisted
     And I click on the confirmation link in the email to "newuser@myorg.com"
+    When I sign in as "newuser@myorg.com" with password "pppppppp" on the legacy sign in page
     Then I should be on the show page for the organisation named "Helpful Folk"
     And an email should be sent to "superadmin@localsupport.org" as notification of the request for admin status of "Helpful Folk"
 
