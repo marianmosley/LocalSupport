@@ -45,6 +45,9 @@ class LogInForm extends React.Component {
         isShowingForm: false
       });
     }).fail( response => {
+      this.setState({
+        errors: JSON.parse(response.responseText).errors
+      });
       console.log("Error submitting Sign Up form", response);
     });
   }
@@ -83,9 +86,21 @@ class LogInForm extends React.Component {
         <label>Confirm Password</label>
         <input ref='signUpPasswordConfirmation' type='password' className='block col-12 mb1 field' />
         <button onClick={this.handleSignUpSubmit} type='submit' className='btn btn-primary'>Sign Up</button>
+        {this.renderErrors()}
         <a onClick={this.handleSignUpToggle} className='block py2'>Already a member? Log in</a>
       </form>
     );
+  }
+
+  renderErrors() {
+    if (this.state.errors) {
+      return (
+        <ul>
+          {_.map(this.state.errors, (values, key) => _.map(values, (val) => <li>{key}: {val}</li>))}
+        </ul>
+      );
+    }
+    // "{"errors":{"email":["is invalid"],"password_confirmation":["doesn't match Password"],"password":["is too short (minimum is 8 characters)"]}}"
   }
 
   renderForm() {

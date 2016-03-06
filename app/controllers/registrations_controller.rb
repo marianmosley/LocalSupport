@@ -1,7 +1,6 @@
 class RegistrationsController < Devise::RegistrationsController
   respond_to :json
   def create
-    debugger
     if params[:user]
       session[:proposed_org] = params[:user][:proposed_org]
       session[:pending_organisation_id] = params[:user][:pending_organisation_id]
