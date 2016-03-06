@@ -40,10 +40,12 @@ class LogInForm extends React.Component {
         }
       }
     }).then( response => {
+      debugger;
       console.log("Good job submitting Sign Up form", response);
       this.setState({
         isShowingForm: false
       });
+      window.location.href = JSON.parse(response).url;
     }).fail( response => {
       this.setState({
         errors: JSON.parse(response.responseText).errors
