@@ -77,30 +77,45 @@ class LogInForm extends React.Component {
   }
 
   renderSignUpForm() {
+    let getErrorClass = (key) => this.state.errors && this.state.errors[key] ? 'is-error' : null;
     return (
       <form>
         <label>Email Address</label>
-        <input ref='signUpEmail' type='text' className='block col-12 mb1 field' />
+        {this.renderErrors('email')}
+        <input
+          ref='signUpEmail'
+          type='text'
+          className={`block col-12 mb1 field ${getErrorClass('email')}`}
+        />
         <label>Password</label>
-        <input ref='signUpPassword' type='password' className='block col-12 mb1 field' />
+        {this.renderErrors('password')}
+        <input
+          ref='signUpPassword'
+          type='password'
+          className={`block col-12 mb1 field ${getErrorClass('password')}`}
+        />
         <label>Confirm Password</label>
-        <input ref='signUpPasswordConfirmation' type='password' className='block col-12 mb1 field' />
+        {this.renderErrors('password_confirmation')}
+        <input
+          ref='signUpPasswordConfirmation'
+          type='password'
+          className={`block col-12 mb1 field ${getErrorClass('password_confirmation')}`}
+        />
         <button onClick={this.handleSignUpSubmit} type='submit' className='btn btn-primary'>Sign Up</button>
-        {this.renderErrors()}
         <a onClick={this.handleSignUpToggle} className='block py2'>Already a member? Log in</a>
       </form>
     );
   }
 
-  renderErrors() {
-    if (this.state.errors) {
+  renderErrors(key) {
+    let errors = this.state.errors && this.state.errors[key];
+    if (errors) {
       return (
-        <ul>
-          {_.map(this.state.errors, (values, key) => _.map(values, (val) => <li>{key}: {val}</li>))}
-        </ul>
+        <div>
+          {_.map(errors, (val, i) => <span key={i} className='red' style={{fontSize: '90%'}}>{val}</span>)}
+        </div>
       );
     }
-    // "{"errors":{"email":["is invalid"],"password_confirmation":["doesn't match Password"],"password":["is too short (minimum is 8 characters)"]}}"
   }
 
   renderForm() {
